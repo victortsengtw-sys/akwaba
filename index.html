@@ -401,6 +401,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--terracotta); ou
 .map-lost { position: fixed; z-index: 4; left: 50%; top: 40%; transform: translate(-50%, -50%); background: var(--paper); color: var(--ink); border: 2px solid var(--ink); border-radius: 18px; padding: 16px 18px; text-align: center; font-size: 14.5px; max-width: 320px; box-shadow: 0 10px 26px rgba(29, 26, 23, 0.3); }
 .map-lost button { margin-top: 10px; }
 .brand { cursor: pointer; }
+.back-btn { left: calc(max(14px, env(safe-area-inset-left, 0px)) + 96px); }
+#intro .back-btn, .back-btn.solo { left: max(14px, env(safe-area-inset-left, 0px)); }
 </style>
 </head>
 <body>
@@ -442,6 +444,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--terracotta); ou
 <div class="overlay" id="level" hidden></div>
 <div class="overlay" id="album" hidden></div>
 <div class="overlay" id="ending" hidden></div>
+<button class="home-btn back-btn" id="backBtn" aria-label="上一步" hidden><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M11 3.5 L5.5 9 L11 14.5" fill="none" stroke="#FAF1DF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>上一步</span></button>
 <button class="home-btn" id="homeBtn" aria-label="回到首頁" hidden><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 8.5 L9 3.5 L15 8.5 V15 H11 V11 H7 V15 H3 Z" fill="none" stroke="#FAF1DF" stroke-width="1.9" stroke-linejoin="round"/></svg><span>首頁</span></button>
 <button class="close-btn" id="closeBtn" aria-label="關閉" hidden><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3 L13 13 M13 3 L3 13" stroke="#FAF1DF" stroke-width="2" stroke-linecap="round"></path></svg></button>
 <div class="modal-back" id="modal" hidden><div class="modal"><div class="inner" id="modalInner"></div></div></div>
@@ -4757,7 +4760,9 @@ var qrcode = function() {
   if (!state.uid) { state.uid = 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); save(); }
   function track(type, data) {
     const entry = { type: type, data: data || {}, at: new Date().toISOString(), uid: state.uid };
-    state.log.push(entry); if (state.log.length > 400) state.log.shift(); save();
+    // 手機上只留匿名紀錄：聯絡方式不存在本機
+    const local = type === 'contact' ? { type: type, data: { where: (data || {}).where }, at: entry.at } : entry;
+    state.log.push(local); if (state.log.length > 400) state.log.shift(); save();
     if (CONFIG.endpoint && navigator.sendBeacon) { try { navigator.sendBeacon(CONFIG.endpoint, JSON.stringify(entry)); } catch (e) { /* ignore */ } }
   }
 
@@ -4801,13 +4806,14 @@ var qrcode = function() {
   }
   function goView(i, quiet) { if (i < 0 || i >= LEVELS.length) return; view = i; renderSheet(); setAmbience(); if (world) world.flyTo(i, { quiet: quiet }); }
 
-  function showOverlay(node) { [el.intro, el.level, el.album, el.ending].forEach(function (o) { o.hidden = o !== node; }); el.close.hidden = node === el.intro || node === el.ending || !node; $('homeBtn').hidden = !node || node === el.intro; el.sheet.hidden = !!node; if (node) node.scrollTop = 0; if (world) world.relayout(); }
+  function showOverlay(node) { [el.intro, el.level, el.album, el.ending].forEach(function (o) { o.hidden = o !== node; }); el.close.hidden = node === el.intro || node === el.ending || !node; $('homeBtn').hidden = !node || node === el.intro; if (node !== el.intro) introSub = false; setTimeout(updateBack, 0); el.sheet.hidden = !!node; if (node) node.scrollTop = 0; if (world) world.relayout(); }
   function hideOverlays() { showOverlay(null); el.sheet.hidden = false; SFX.stopGroove(); if (world) world.relayout(); setAmbience(); }
 
   // ---------- 開場 ----------
   const INTRO_ART = { ground: '#2C6A68', motif: 'plane', head: 'wrap', wrap: ['#D65F2A', '#F2E4C9', '#E8A33A', '#7FB5AE', '#1D1A17', '#B44A1E'], dress: ['#22504F', '#D65F2A', '#E8A33A', '#F2E4C9'], prop: 'suitcase' };
   function factRow(svg, text) { return '<div><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">' + svg + '</svg><span>' + text + '</span></div>'; }
   function renderIntro() {
+    introSub = false;
     const started = state.done.length > 0;
     el.intro.innerHTML = '<div class="art-band" style="--band:' + INTRO_ART.ground + '">' + artSVG(INTRO_ART, '頭戴印花布頭巾的旅人剪影') + '</div>' +
       '<div class="wrap"><h2>Akwaba！非洲大冒險</h2>' +
@@ -4841,7 +4847,7 @@ var qrcode = function() {
     $('wpGo').addEventListener('click', function () { onDone(picked.slice()); });
   }
   function renderPre() {
-    showOverlay(el.intro);
+    showOverlay(el.intro); introSub = true; updateBack();
     wordPicker(el.intro, '提到非洲，你第一個想到的是？', function (words) {
       state.pre = words; save(); track('pre_words', { words: words });
       hideOverlays(); goView(firstOpen());
@@ -4872,13 +4878,43 @@ var qrcode = function() {
     const lv = run.lv;
     return '<div class="kicker">' + (lv.ch === 'x' ? '<span class="no">★</span>' : '<span class="no">' + lv.id + '</span>') + '<span>' + esc(chapterLabel(lv)) + '</span><span>' + esc(lv.place) + '</span></div><h2>' + esc(lv.title) + '</h2>';
   }
+  // ---------- 上一步 ----------
+  const HOSTED = (function () { try { return /^https?:$/.test(location.protocol) && !/claude|anthropic|usercontent/.test(location.hostname); } catch (e) { return false; } })();
+  let introSub = false;
+  function setStep(n) { if (!run) return; const prev = run.step; run.step = n; if (HOSTED && n > (prev || 0)) { try { history.pushState({ akw: n }, ''); } catch (e) { /* ignore */ } } updateBack(); }
+  function updateBack() {
+    const b = $('backBtn'); if (!b) return;
+    b.hidden = !((!el.level.hidden && run && run.step > 0) || (!el.intro.hidden && introSub));
+    b.classList.toggle('solo', !el.intro.hidden);
+  }
+  function leavePlay() {
+    clearRunTimers();
+    if (run && run.sc) { run.sc.destroy(); run.sc = null; }
+    if (run) run.playing = false;
+    const band = el.level.querySelector('.art-band'); if (band) band.style.display = ''; el.level.classList.remove('playing');
+  }
+  function goBack() {
+    if (!el.modal.hidden) { closeModal(); return true; }
+    if (!el.intro.hidden && introSub) { renderIntro(); return true; }
+    if (el.level.hidden || !run) return false;
+    if (run.step === 1) { leavePlay(); stepStory(); }
+    else if (run.step === 2) { stepPlay(); }
+    else if (run.step === 3) { stepReveal(); }
+    else return false;
+    el.level.scrollTop = 0; return true;
+  }
   function stepStory() {
+    setStep(0);
     body().innerHTML = head() + '<div class="story">' + run.lv.story.map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('') + '</div>' +
       '<div class="next-row"><button class="primary" id="stGo"><i></i>開始</button></div>';
     $('stGo').addEventListener('click', stepPlay);
   }
   function applyDelta(d) { if (!d) return; ['rel', 'loc', 'cfa'].forEach(function (k) { if (d[k]) run.delta[k] += d[k]; }); }
   function stepPlay() {
+    leavePlay();
+    run.delta = { rel: 0, loc: 0, cfa: 0 }; run.answers = [];
+    if (!$('lvBody')) return;
+    setStep(1);
     const p = run.lv.play;
     const fn = { choice: playChoice, assemble: playAssemble, phone: playPhone, match: playMatch, rhythm: playDance, regions: playRegions, order: playOrder, quiz: playQuiz, bargain: playBargain }[p.type];
     const stg = STAGES[run.lv.id];
@@ -5235,6 +5271,7 @@ var qrcode = function() {
   }
 
   function stepReveal() {
+    setStep(2);
     const lv = run.lv, r = lv.reveal;
     if (run.sc) { run.sc.destroy(); run.sc = null; }
     run.playing = false;
@@ -5254,6 +5291,7 @@ var qrcode = function() {
       '<div class="txt"><span class="nm">' + esc(lv.card.name) + '</span><span class="sb">' + esc(lv.card.sub) + '</span><span class="ft">' + esc(lv.card.fact) + '</span></div></div>';
   }
   function stepCard() {
+    setStep(3);
     const lv = run.lv, first = state.done.indexOf(lv.id) < 0, d = run.delta;
     if (first) { state.done.push(lv.id); state.res.rel += d.rel; state.res.loc += d.loc; state.res.cfa = Math.max(0, state.res.cfa + d.cfa); save(); }
     track('level_done', { id: lv.id, first: first });
@@ -5548,7 +5586,7 @@ var qrcode = function() {
       const reach = $('ctReach').value.trim();
       if (!reach) { $('ctErr').textContent = '請填寫 Email 或 LINE ID，我們才能通知你。'; return; }
       if (!$('ctOk').checked) { $('ctErr').textContent = '請勾選同意，才能保存你的聯絡方式。'; return; }
-      state.contact = { name: $('ctName').value.trim(), reach: reach, interests: picked.slice(), at: new Date().toISOString() };
+      state.contact = { name: $('ctName').value.trim(), at: new Date().toISOString() };
       save(); track('contact', { where: where, name: state.contact.name, reach: reach, interests: picked.slice() });
       SFX.good();
       el.modalInner.innerHTML = '<div class="kicker">已保存</div><p class="q" style="margin-top:4px">謝謝你' + (state.contact.name ? '，' + esc(state.contact.name) : '') + '！下一站開放時見。</p><div class="next-row"><button class="primary" id="ctDone"><i></i>繼續旅程</button></div>';
@@ -5614,6 +5652,8 @@ var qrcode = function() {
   el.go.addEventListener('click', function () { if (statusOf(view) !== 'locked') openLevel(view); });
   el.albumBtn.addEventListener('click', renderAlbum);
   el.brand.addEventListener('click', renderIntro);
+  $('backBtn').addEventListener('click', function () { if (HOSTED) { try { history.back(); return; } catch (e) { /* ignore */ } } goBack(); });
+  window.addEventListener('popstate', function () { if (!goBack() && !el.level.hidden) el.close.click(); });
   $('homeBtn').addEventListener('click', function () {
     if (run) { track('level_quit', { id: run.lv.id, via: 'home' }); clearRunTimers(); run = null; }
     closeModal(); renderIntro();
