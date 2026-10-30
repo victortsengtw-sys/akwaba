@@ -8,10 +8,33 @@
 <meta property="og:url" content="https://victortsengtw-sys.github.io/akwaba/">
 <meta property="og:image" content="https://victortsengtw-sys.github.io/akwaba/og-image.png">
 <!-- ================= 上線設定結束 ================= -->
-<meta name="description" content="跟著第一次來到西非的亞洲旅人，走進象牙海岸的日常：市集、計程車、音樂、手機支付。15 關、約 20 分鐘，手機就能玩。">
+<!-- Google Analytics 4：只在正式網站送資料；?c= 代碼在網址被清掉前先轉成 GA4 的來源 -->
+<script>
+(function () {
+  if (!/github\.io$/.test(location.hostname)) return;
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function () { dataLayer.push(arguments); };
+  var loc = location.href;
+  try {
+    var q = new URLSearchParams(location.search), c = (q.get('c') || '').slice(0, 20), r = q.get('r');
+    if (!q.get('utm_source') && (c || r)) {
+      var u = new URL(location.href);
+      u.searchParams.set('utm_source', c || 'player_share');
+      u.searchParams.set('utm_medium', r ? 'player_share' : 'akwaba_link');
+      u.searchParams.set('utm_campaign', 'akwaba_launch');
+      loc = u.toString();
+    }
+  } catch (e) { /* ignore */ }
+  gtag('js', new Date());
+  gtag('config', 'G-FHEL37G5ZD', { page_location: loc });
+  var s = document.createElement('script'); s.async = true; s.src = 'https://www.googletagmanager.com/gtag/js?id=G-FHEL37G5ZD';
+  document.head.appendChild(s);
+})();
+</script>
+<meta name="description" content="跟著第一次來到西非的亞洲旅人，走進象牙海岸的日常：市集、計程車、音樂、手機支付。15 關、約 10–15 分鐘，手機就能玩。">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Akwaba！非洲大冒險">
-<meta property="og:description" content="跟著亞洲旅人，走進象牙海岸的日常。15 關、約 20 分鐘，手機就能玩。">
+<meta property="og:description" content="跟著亞洲旅人，走進象牙海岸的日常。15 關、約 10–15 分鐘，手機就能玩。">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="zh_TW">
@@ -108,6 +131,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--terracotta); ou
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 .overlay[hidden] { display: none !important; }
+/* 關卡進行中（手機）：插圖收起，內容讓開左上角的首頁／上一步按鈕 */
+.overlay.playing #lvBody { padding-top: calc(env(safe-area-inset-top, 0px) + 58px); }
 .wrap { max-width: 560px; margin: 0 auto; padding: 0 max(20px, env(safe-area-inset-right, 0px)) 28px max(20px, env(safe-area-inset-left, 0px)); }
 .close-btn {
   position: fixed; z-index: 12; top: calc(env(safe-area-inset-top, 0px) + 12px); right: max(14px, env(safe-area-inset-right, 0px));
@@ -4808,6 +4833,30 @@ var qrcode = function() {
     const local = type === 'contact' ? { type: type, data: { where: (data || {}).where }, at: entry.at } : entry;
     state.log.push(local); if (state.log.length > 400) state.log.shift(); save();
     if (CONFIG.endpoint && navigator.sendBeacon) { try { navigator.sendBeacon(CONFIG.endpoint, JSON.stringify(entry)); } catch (e) { /* ignore */ } }
+    ga4(type, data || {});
+  }
+  // GA4：只送匿名、不含個資的欄位（不送名字、留言內容、聯絡方式）
+  function ga4(type, d) {
+    if (typeof window.gtag !== 'function') return;
+    const list = function (a) { return Array.isArray(a) ? a.join('、').slice(0, 100) : ''; };
+    const map = {
+      arrive: ['akwaba_arrive', { entry_code: d.ch || '', from_site: d.from || '', via_player: d.ref ? 'yes' : 'no' }],
+      pre_words: ['game_begin', { words_before: list(d.words) }],
+      level_start: ['level_start', { level_id: String(d.id || '') }],
+      level_done: ['level_complete', { level_id: String(d.id || ''), first_time: d.first ? 'yes' : 'no' }],
+      level_quit: ['level_quit', { level_id: String(d.id || '') }],
+      post_words: ['game_complete', { words_after: list(d.words), words_before: list(d.pre) }],
+      feedback: ['player_feedback', { stars: Number(d.stars) || 0 }],
+      share_link: ['share', { method: d.channel || 'link', content_type: 'game' }],
+      share_native: ['share', { method: 'native', content_type: 'report' }],
+      share_save: ['share', { method: 'save_image', content_type: 'report' }],
+      invite_copy: ['share', { method: 'copy_invite', content_type: 'game' }],
+      contact: ['generate_lead', { lead_source: 'game_ending' }],
+      author_open: ['author_open', {}],
+      author_contact: ['author_contact', { method: d.via || '' }]
+    };
+    const m = map[type]; if (!m) return;
+    try { window.gtag('event', m[0], m[1]); } catch (e) { /* ignore */ }
   }
 
   let view = 0, world = null;
@@ -4868,7 +4917,7 @@ var qrcode = function() {
       '<div class="byline"><span class="av-s">' + avatarSVG(48) + '</span><span><b>' + esc(CONFIG.author) + '</b><small>原創企劃・現居象牙海岸阿比讓</small></span></div>' +
       '<div id="introCount"></div>' +
       '<p class="lead">跟著第一次來到西非的亞洲旅人，走進象牙海岸的日常：市集、計程車、音樂、手機支付，還有三座各有故事的城市。故事大多來自 Victor 的親身經歷，每一關的事實都附上資料來源。</p>' +
-      '<div class="meta-chips"><span>15 關・約 20 分鐘</span><span>建議開啟聲音</span><span>進度自動保存</span></div>' +
+      '<div class="meta-chips"><span>15 關・約 10–15 分鐘</span><span>建議開啟聲音</span><span>進度自動保存</span></div>' +
       '<div class="next-row">' + (allDone() ? '<button class="primary" id="introGo"><i></i>看我的改觀報告</button><button class="ghost" id="introMap">回到地圖</button></div><div class="row-btns"><button class="ghost" id="introReset">重新開始</button>'
         : started ? '<button class="primary" id="introGo"><i></i>繼續旅程</button><button class="ghost" id="introReset">重新開始</button>' : '<button class="primary" id="introGo"><i></i>出發</button>') + '</div>' +
       (state.contact ? '' : '<button class="save-cta" id="introSave"><span class="ic"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="4.5" width="15" height="11" rx="2" fill="none" stroke="#FAF1DF" stroke-width="1.8"/><path d="M3 5.5 L10 11 L17 5.5" fill="none" stroke="#FAF1DF" stroke-width="1.8" stroke-linejoin="round"/></svg></span><span><b>留下 Email，第一個玩到新城市</b><small>下一章開放時通知你，隨時可以取消</small></span><svg class="arrow" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M6 3 L12 9 L6 15" stroke="#B44A1E" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>') +
