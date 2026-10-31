@@ -12,7 +12,7 @@
 <script>
 (function () {
   /*noconv*/var LANG = 'tc';/*/noconv*/
-  var FILE = { tc: '', sc: 'sc.html', en: 'en.html' };
+  var FILE = { tc: '', sc: 'sc.html', en: 'en.html', fr: 'fr.html' };
   try {
     var pref = localStorage.getItem('akwaba-lang'), want = pref;
     if (!want) {
@@ -23,9 +23,10 @@
       else if (/(^|,)zh/.test(langs)) want = (/(^|,)zh-(cn|sg|my|hans)/.test(langs) && !/(^|,)zh-(tw|hk|mo|hant)/.test(langs)) ? 'sc' : 'tc';
       else if (/^xhs/.test(c)) want = 'sc';
       else if (/^(ig|fb|threads|line|yt)/.test(c)) want = 'tc';
+      else if (/^(tt|tiktok)/.test(c) || /(^|,)fr/.test(langs)) want = 'fr';
       else want = 'en';
     }
-    if (FILE[want] !== undefined && want !== LANG) { window.AKWABA_REDIRECT = true; try { sessionStorage.setItem('akwaba-ref', document.referrer || ''); } catch (e2) { /* ignore */ } location.replace(location.pathname.replace(/(index|sc|en)\.html$/, '') + FILE[want] + location.search); }
+    if (FILE[want] !== undefined && want !== LANG) { window.AKWABA_REDIRECT = true; try { sessionStorage.setItem('akwaba-ref', document.referrer || ''); } catch (e2) { /* ignore */ } location.replace(location.pathname.replace(/(index|sc|en|fr)\.html$/, '') + FILE[want] + location.search); }
   } catch (e) { /* ignore */ }
 })();
 </script>
@@ -62,6 +63,7 @@
 <link rel="alternate" hreflang="zh-Hant" href="https://victortsengtw-sys.github.io/akwaba/">
 <link rel="alternate" hreflang="zh-Hans" href="https://victortsengtw-sys.github.io/akwaba/sc.html">
 <link rel="alternate" hreflang="en" href="https://victortsengtw-sys.github.io/akwaba/en.html">
+<link rel="alternate" hreflang="fr" href="https://victortsengtw-sys.github.io/akwaba/fr.html">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#2C6A68">
 <meta name="author" content="Victor Tseng 曾浩瑜">
@@ -275,8 +277,9 @@ body:has(.overlay.playing:not([hidden])) .lang-btn, body:has(.modal-back:not([hi
 .gain span { background: var(--cream); border-radius: 999px; padding: 5px 12px; }
 .gain b { font-family: var(--num); }
 .album-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-top: 18px; }
-.mini { border-radius: 16px; overflow: hidden; background: var(--ink); color: var(--paper); border: none; padding: 0; text-align: left; cursor: pointer; }
-.mini .face { height: 92px; display: grid; place-items: center; }
+.mini { border-radius: 16px; overflow: hidden; background: var(--ink); color: var(--paper); border: none; padding: 0; text-align: left; cursor: pointer; display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; }
+.mini .face { flex: 1 0 92px; min-height: 92px; display: grid; place-items: center; }
+.mini .nm { flex: 0 0 auto; }
 .mini .nm { padding: 8px 10px 10px; font-family: var(--display); font-weight: 900; font-size: 15px; display: block; }
 .mini.locked { background: var(--line); color: var(--muted); cursor: default; }
 .mini.locked .face { background: #E8D9BC; }
@@ -554,7 +557,7 @@ body:has(.overlay.playing:not([hidden])) .lang-btn, body:has(.modal-back:not([hi
 <div class="overlay" id="ending" hidden></div>
 <button class="home-btn back-btn" id="backBtn" aria-label="上一步" hidden><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M11 3.5 L5.5 9 L11 14.5" fill="none" stroke="#FAF1DF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>上一步</span></button>
 <button class="home-btn" id="homeBtn" aria-label="回到首頁" hidden><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 8.5 L9 3.5 L15 8.5 V15 H11 V11 H7 V15 H3 Z" fill="none" stroke="#FAF1DF" stroke-width="1.9" stroke-linejoin="round"/></svg><span>首頁</span></button>
-<!--noconv--><button class="lang-btn" id="langBtn" aria-haspopup="true" aria-expanded="false" aria-label="語言 Language"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.4" fill="none" stroke="#1D1A17" stroke-width="1.4"/><path d="M1.8 8 H14.2 M8 1.6 C5.6 4 5.6 12 8 14.4 M8 1.6 C10.4 4 10.4 12 8 14.4" fill="none" stroke="#1D1A17" stroke-width="1.2"/></svg><span id="langCur"></span></button><div class="lang-menu" id="langMenu" role="menu" hidden><button type="button" role="menuitem" data-l="tc">繁體中文</button><button type="button" role="menuitem" data-l="sc">简体中文</button><button type="button" role="menuitem" data-l="en">English</button></div><!--/noconv-->
+<!--noconv--><button class="lang-btn" id="langBtn" aria-haspopup="true" aria-expanded="false" aria-label="語言 Language"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.4" fill="none" stroke="#1D1A17" stroke-width="1.4"/><path d="M1.8 8 H14.2 M8 1.6 C5.6 4 5.6 12 8 14.4 M8 1.6 C10.4 4 10.4 12 8 14.4" fill="none" stroke="#1D1A17" stroke-width="1.2"/></svg><span id="langCur"></span></button><div class="lang-menu" id="langMenu" role="menu" hidden><button type="button" role="menuitem" data-l="tc">繁體中文</button><button type="button" role="menuitem" data-l="sc">简体中文</button><button type="button" role="menuitem" data-l="en">English</button><button type="button" role="menuitem" data-l="fr">Français</button></div><!--/noconv-->
 <button class="close-btn" id="closeBtn" aria-label="關閉" hidden><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3 L13 13 M13 3 L3 13" stroke="#FAF1DF" stroke-width="2" stroke-linecap="round"></path></svg></button>
 <div class="modal-back" id="modal" hidden><div class="modal"><div class="inner" id="modalInner"></div></div></div>
 
@@ -4878,7 +4881,7 @@ var qrcode = function() {
   if (Array.isArray(state.post)) state.post = state.post.map(localW);
   (function langSwitch() {
     const b = document.getElementById('langBtn'), menu = document.getElementById('langMenu'); if (!b || !menu) return;
-    document.getElementById('langCur').textContent = /*noconv*/({ tc: '繁', sc: '简', en: 'EN' })/*/noconv*/[LANG];
+    document.getElementById('langCur').textContent = /*noconv*/({ tc: '繁', sc: '简', en: 'EN', fr: 'FR' })/*/noconv*/[LANG];
     menu.querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x.dataset.l === LANG); });
     const setOpen = function (o) { menu.hidden = !o; b.setAttribute('aria-expanded', o ? 'true' : 'false'); };
     b.addEventListener('click', function (e) { e.stopPropagation(); setOpen(menu.hidden); });
@@ -4889,8 +4892,8 @@ var qrcode = function() {
       if (!to || to === LANG) return;
       try { localStorage.setItem('akwaba-lang', to); sessionStorage.setItem('akwaba-switched', '1'); } catch (e2) { /* ignore */ }
       track('lang_switch', { to: to });
-      const base = location.pathname.replace(/(index|sc|en)\.html$/, '');
-      setTimeout(function () { location.href = base + ({ tc: '', sc: 'sc.html', en: 'en.html' })[to]; }, 150);
+      const base = location.pathname.replace(/(index|sc|en|fr)\.html$/, '');
+      setTimeout(function () { location.href = base + ({ tc: '', sc: 'sc.html', en: 'en.html', fr: 'fr.html' })[to]; }, 150);
     });
   })();
   function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ } }
@@ -5599,9 +5602,9 @@ var qrcode = function() {
     let hs = 32; x.font = '700 ' + hs + 'px ' + SANS; while (x.measureText(headTxt).width > maxW && hs > 22) { hs--; x.font = '700 ' + hs + 'px ' + SANS; }
     x.fillText(headTxt, tx, FOOT_Y + 70);
     x.font = '400 24px ' + SANS; x.fillStyle = 'rgba(250,241,223,0.75)';
-    const cr = credit();
-    if (x.measureText(cr).width <= maxW) x.fillText(cr, tx, FOOT_Y + 112);
-    else { const k = cr.lastIndexOf(' · '); x.fillText(cr.slice(0, k), tx, FOOT_Y + 108); x.fillText(cr.slice(k + 3), tx, FOOT_Y + 140); }
+    const cr = credit(), k = cr.lastIndexOf(' · ');
+    if (x.measureText(cr).width <= maxW || k < 0) x.fillText(cr, tx, FOOT_Y + 112);
+    else { x.fillText(cr.slice(0, k), tx, FOOT_Y + 108); x.fillText(cr.slice(k + 3), tx, FOOT_Y + 140); }
   }
   function pill(x, text, X, Y) {
     x.font = '700 30px ' + SANS; const w = x.measureText(text).width + 48;
@@ -5831,7 +5834,7 @@ var qrcode = function() {
       if (!reach) { $('ctErr').textContent = '請填寫 Email 或 LINE ID，我們才能通知你。'; return; }
       if (!$('ctOk').checked) { $('ctErr').textContent = '請勾選同意，才能保存你的聯絡方式。'; return; }
       state.contact = { name: $('ctName').value.trim(), at: new Date().toISOString() };
-      save(); track('contact', { where: where, name: state.contact.name, reach: reach, interests: picked.slice() });
+      save(); track('contact', { where: where, name: state.contact.name, reach: reach, interests: picked.slice(), lang: LANG });
       SFX.good();
       el.modalInner.innerHTML = '<div class="kicker">已保存</div><p class="q" style="margin-top:4px">謝謝你' + (state.contact.name ? '，' + esc(state.contact.name) : '') + '！下一站開放時見。</p><div class="next-row"><button class="primary" id="ctDone"><i></i>繼續旅程</button></div>';
       $('ctDone').addEventListener('click', function () { closeModal(); if (then) then(); });
