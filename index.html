@@ -8,10 +8,31 @@
 <meta property="og:url" content="https://victortsengtw-sys.github.io/akwaba/">
 <meta property="og:image" content="https://victortsengtw-sys.github.io/akwaba/og-image.png">
 <!-- ================= 上線設定結束 ================= -->
+<!-- 語言版本：玩家選過就照他的選擇；沒選過時，從首頁依瀏覽器語言和來源代碼自動挑 -->
+<script>
+(function () {
+  /*noconv*/var LANG = 'tc';/*/noconv*/
+  var FILE = { tc: '', sc: 'sc.html', en: 'en.html' };
+  try {
+    var pref = localStorage.getItem('akwaba-lang'), want = pref;
+    if (!want) {
+      if (LANG !== 'tc') return;   // 別人分享的簡體／英文連結，照連結的語言
+      var langs = ((navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || '']).join(',').toLowerCase();
+      var c = (new URLSearchParams(location.search).get('c') || '').toLowerCase();
+      if (/^li/.test(c)) want = 'en';
+      else if (/(^|,)zh/.test(langs)) want = (/(^|,)zh-(cn|sg|my|hans)/.test(langs) && !/(^|,)zh-(tw|hk|mo|hant)/.test(langs)) ? 'sc' : 'tc';
+      else if (/^xhs/.test(c)) want = 'sc';
+      else if (/^(ig|fb|threads|line|yt)/.test(c)) want = 'tc';
+      else want = 'en';
+    }
+    if (FILE[want] !== undefined && want !== LANG) { window.AKWABA_REDIRECT = true; try { sessionStorage.setItem('akwaba-ref', document.referrer || ''); } catch (e2) { /* ignore */ } location.replace(location.pathname.replace(/(index|sc|en)\.html$/, '') + FILE[want] + location.search); }
+  } catch (e) { /* ignore */ }
+})();
+</script>
 <!-- Google Analytics 4：只在正式網站送資料；?c= 代碼在網址被清掉前先轉成 GA4 的來源 -->
 <script>
 (function () {
-  if (!/github\.io$/.test(location.hostname)) return;
+  if (!/github\.io$/.test(location.hostname) || window.AKWABA_REDIRECT) return;
   window.dataLayer = window.dataLayer || [];
   window.gtag = function () { dataLayer.push(arguments); };
   var loc = location.href;
@@ -38,6 +59,9 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="zh_TW">
+<link rel="alternate" hreflang="zh-Hant" href="https://victortsengtw-sys.github.io/akwaba/">
+<link rel="alternate" hreflang="zh-Hans" href="https://victortsengtw-sys.github.io/akwaba/sc.html">
+<link rel="alternate" hreflang="en" href="https://victortsengtw-sys.github.io/akwaba/en.html">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#2C6A68">
 <meta name="author" content="Victor Tseng 曾浩瑜">
@@ -131,6 +155,27 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--terracotta); ou
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 .overlay[hidden] { display: none !important; }
+/* 語言切換 */
+.lang-btn { position: fixed; z-index: 13; top: calc(env(safe-area-inset-top, 0px) + 12px); right: var(--lang-right, max(14px, env(safe-area-inset-right, 0px)));
+  height: 40px; padding: 0 12px 0 10px; border: none; border-radius: 999px; background: var(--cream); box-shadow: 0 6px 18px rgba(29, 26, 23, 0.18);
+  display: flex; align-items: center; gap: 5px; cursor: pointer; font-family: var(--body); font-weight: 700; font-size: 14px; color: var(--ink); }
+.lang-btn svg { flex-shrink: 0; }
+.lang-menu { position: fixed; z-index: 31; top: calc(env(safe-area-inset-top, 0px) + 58px); right: var(--lang-right, max(14px, env(safe-area-inset-right, 0px)));
+  background: var(--cream); border-radius: 16px; box-shadow: 0 12px 30px rgba(29, 26, 23, 0.25); padding: 6px; min-width: 150px; }
+.lang-menu[hidden] { display: none; }
+.lang-menu button { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; border: none; background: none; cursor: pointer;
+  padding: 11px 14px; border-radius: 11px; font: 500 15px/1 var(--body); color: var(--ink); text-align: left; }
+.lang-menu button.on { background: var(--ink); color: var(--cream); font-weight: 700; }
+.lang-menu button.on::after { content: "✓"; }
+.topbar { padding-right: calc(max(14px, env(safe-area-inset-right, 0px)) + 76px) !important; }
+body:has(#closeBtn:not([hidden])) { --lang-right: calc(max(14px, env(safe-area-inset-right, 0px)) + 54px); }
+body:has(.overlay.playing:not([hidden])) .lang-btn, body:has(.modal-back:not([hidden])) .lang-btn { display: none; }
+@media (max-width: 440px) {
+  body:not(:has(.overlay:not([hidden]))) .lang-btn { width: 40px; padding: 0; justify-content: center; }
+  body:not(:has(.overlay:not([hidden]))) #langCur { display: none; }
+  .topbar { padding-right: calc(max(14px, env(safe-area-inset-right, 0px)) + 48px) !important; }
+}
+@media (max-width: 385px) { .topbar { gap: 6px; } .res { gap: 6px; padding: 8px 10px; font-size: 11px; } }
 /* 關卡進行中（手機）：插圖收起，內容讓開左上角的首頁／上一步按鈕 */
 .overlay.playing #lvBody { padding-top: calc(env(safe-area-inset-top, 0px) + 58px); }
 .wrap { max-width: 560px; margin: 0 auto; padding: 0 max(20px, env(safe-area-inset-right, 0px)) 28px max(20px, env(safe-area-inset-left, 0px)); }
@@ -509,6 +554,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--terracotta); ou
 <div class="overlay" id="ending" hidden></div>
 <button class="home-btn back-btn" id="backBtn" aria-label="上一步" hidden><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M11 3.5 L5.5 9 L11 14.5" fill="none" stroke="#FAF1DF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>上一步</span></button>
 <button class="home-btn" id="homeBtn" aria-label="回到首頁" hidden><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 8.5 L9 3.5 L15 8.5 V15 H11 V11 H7 V15 H3 Z" fill="none" stroke="#FAF1DF" stroke-width="1.9" stroke-linejoin="round"/></svg><span>首頁</span></button>
+<!--noconv--><button class="lang-btn" id="langBtn" aria-haspopup="true" aria-expanded="false" aria-label="語言 Language"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.4" fill="none" stroke="#1D1A17" stroke-width="1.4"/><path d="M1.8 8 H14.2 M8 1.6 C5.6 4 5.6 12 8 14.4 M8 1.6 C10.4 4 10.4 12 8 14.4" fill="none" stroke="#1D1A17" stroke-width="1.2"/></svg><span id="langCur"></span></button><div class="lang-menu" id="langMenu" role="menu" hidden><button type="button" role="menuitem" data-l="tc">繁體中文</button><button type="button" role="menuitem" data-l="sc">简体中文</button><button type="button" role="menuitem" data-l="en">English</button></div><!--/noconv-->
 <button class="close-btn" id="closeBtn" aria-label="關閉" hidden><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3 L13 13 M13 3 L3 13" stroke="#FAF1DF" stroke-width="2" stroke-linecap="round"></path></svg></button>
 <div class="modal-back" id="modal" hidden><div class="modal"><div class="inner" id="modalInner"></div></div></div>
 
@@ -2817,6 +2863,7 @@ var qrcode = function() {
 <script>
 (function () {
   'use strict';
+  if (window.AKWABA_REDIRECT) return;   // 正在轉到其他語言版本，這一頁不啟動
   // 上線到自己的網站後填入：endpoint 收集匿名回答（例如 Google Apps Script 網址），followUrl 是 LINE、IG 或表單連結
   // shareUrl 是遊戲上線後的公開網址，邀請文字會附上它
   const CONFIG = { endpoint: (function () {
@@ -3156,6 +3203,14 @@ var qrcode = function() {
   ];
 
   const PRE_WORDS = ['貧窮', '戰爭', '疾病', '野生動物', '沙漠', '部落', '音樂', '美食', '時尚', '科技', '商機', '熱情'];
+  /*noconv*/const PRE_WORDS_TC = ['貧窮', '戰爭', '疾病', '野生動物', '沙漠', '部落', '音樂', '美食', '時尚', '科技', '商機', '熱情']; const LANG = 'tc';/*/noconv*/
+  function canonW(w) { const i = PRE_WORDS.indexOf(w); return i >= 0 ? PRE_WORDS_TC[i] : w; }
+  function localW(w) { const i = PRE_WORDS_TC.indexOf(w); return i >= 0 ? PRE_WORDS[i] : w; }
+  function canonData(d) {
+    if (!d || typeof d !== 'object') return d; const o = Object.assign({}, d);
+    ['words', 'pre', 'post'].forEach(function (k) { if (Array.isArray(o[k])) o[k] = o[k].map(canonW); });
+    return o;
+  }
 
   const AMB = { '1-1': 'city', '1-2': 'water', '1-3': 'market', '2-1': 'city', '2-2': 'market', '2-3': 'city', 'x-1': 'beach', '3-1': 'city', '3-2': 'night', '3-3': 'city', 'x-2': 'water', '4-1': 'city', '4-2': 'city', '4-3': 'water', 'x-3': 'savanna' };
 
@@ -4819,6 +4874,25 @@ var qrcode = function() {
   function fresh() { return { done: [], res: { rel: 0, loc: 0, cfa: 10000 }, pre: null, post: null, log: [], chapterQ: {}, pops: [], contact: null, contactAsked: false }; }
   let state = fresh();
   try { const raw = localStorage.getItem(KEY); if (raw) state = Object.assign(fresh(), JSON.parse(raw)); } catch (e) { /* 沒有儲存空間時照常遊玩 */ }
+  if (Array.isArray(state.pre)) state.pre = state.pre.map(localW);
+  if (Array.isArray(state.post)) state.post = state.post.map(localW);
+  (function langSwitch() {
+    const b = document.getElementById('langBtn'), menu = document.getElementById('langMenu'); if (!b || !menu) return;
+    document.getElementById('langCur').textContent = /*noconv*/({ tc: '繁', sc: '简', en: 'EN' })/*/noconv*/[LANG];
+    menu.querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x.dataset.l === LANG); });
+    const setOpen = function (o) { menu.hidden = !o; b.setAttribute('aria-expanded', o ? 'true' : 'false'); };
+    b.addEventListener('click', function (e) { e.stopPropagation(); setOpen(menu.hidden); });
+    document.addEventListener('click', function (e) { if (!menu.hidden && !menu.contains(e.target)) setOpen(false); });
+    menu.addEventListener('click', function (e) {
+      const t = e.target.closest('button'); if (!t) return;
+      const to = t.dataset.l; setOpen(false);
+      if (!to || to === LANG) return;
+      try { localStorage.setItem('akwaba-lang', to); sessionStorage.setItem('akwaba-switched', '1'); } catch (e2) { /* ignore */ }
+      track('lang_switch', { to: to });
+      const base = location.pathname.replace(/(index|sc|en)\.html$/, '');
+      setTimeout(function () { location.href = base + ({ tc: '', sc: 'sc.html', en: 'en.html' })[to]; }, 150);
+    });
+  })();
   function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ } }
   if (!state.uid) { state.uid = 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); save(); }
   function resetState() { const keep = { uid: state.uid, arrived: state.arrived, feedback: state.feedback }; state = Object.assign(fresh(), keep); save(); }
@@ -4828,6 +4902,7 @@ var qrcode = function() {
   const IS_IOS = (function () { try { return /iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent)); } catch (e) { return false; } })();
   function track(type, data) {
     if (!state.uid) { state.uid = 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); save(); }   // 保險：玩家代號永遠不會是空的
+    data = canonData(data);
     const entry = { type: type, data: data || {}, at: new Date().toISOString(), uid: state.uid };
     // 手機上只留匿名紀錄：聯絡方式不存在本機
     const local = type === 'contact' ? { type: type, data: { where: (data || {}).where }, at: entry.at } : entry;
@@ -4840,7 +4915,8 @@ var qrcode = function() {
     if (typeof window.gtag !== 'function') return;
     const list = function (a) { return Array.isArray(a) ? a.join('、').slice(0, 100) : ''; };
     const map = {
-      arrive: ['akwaba_arrive', { entry_code: d.ch || '', from_site: d.from || '', via_player: d.ref ? 'yes' : 'no' }],
+      arrive: ['akwaba_arrive', { entry_code: d.ch || '', from_site: d.from || '', via_player: d.ref ? 'yes' : 'no', lang_version: d.lang || '' }],
+      lang_switch: ['lang_switch', { lang_version: d.to || '' }],
       pre_words: ['game_begin', { words_before: list(d.words) }],
       level_start: ['level_start', { level_id: String(d.id || '') }],
       level_done: ['level_complete', { level_id: String(d.id || ''), first_time: d.first ? 'yes' : 'no' }],
@@ -5481,7 +5557,8 @@ var qrcode = function() {
   function credit() { return '© ' + CONFIG.year + ' ' + CONFIG.authorFull + '　原創企劃・Akwaba！非洲大冒險'; }
   function wrapText(ctx, text, maxW) {
     const lines = []; let line = '';
-    for (const ch of text) { const test = line + ch; if (ctx.measureText(test).width > maxW && line) { lines.push(line); line = ch; } else line = test; }
+    const units = String(text).match(/[\u2E80-\u9FFF\uF900-\uFAFF\uFF00-\uFFEF\u3000-\u303F]|[^\s\u2E80-\u9FFF\uF900-\uFAFF\uFF00-\uFFEF\u3000-\u303F]+|\s+/g) || [];
+    for (const ch of units) { const test = line + ch; if (ctx.measureText(test).width > maxW && line.trim()) { lines.push(line.trimEnd()); line = ch.trim() ? ch : ''; } else line = test; }
     if (line) lines.push(line); return lines;
   }
   function svgImage(svgStr) {
@@ -5877,7 +5954,7 @@ var qrcode = function() {
       if (d.players >= SHOW_COUNT_FROM && d.finished > 0 && $('finishCount')) $('finishCount').innerHTML = '<p class="count-line">你和 <b>' + fmtN(d.finished) + '</b> 位旅人一起走完了全程</p>';
       const mine = state.post || [];
       if (d.total >= 10 && d.post && mine.length) {
-        let best = null; mine.forEach(function (w) { const p = d.post[w]; if (p != null && (!best || p > best[1])) best = [w, p]; });
+        let best = null; mine.forEach(function (w) { const p = d.post[canonW(w)]; if (p != null && (!best || p > best[1])) best = [w, p]; });
         if (best && $('peerLine')) $('peerLine').innerHTML = '<p class="peer">你玩完後選了「' + esc(best[0]) + '」，和 <b>' + Math.round(best[1]) + '%</b> 的玩家一樣。</p>';
       }
       const q = (d.quotes || []).filter(function (t) { return typeof t === 'string' && t.trim(); }).slice(0, 6);
@@ -5949,10 +6026,12 @@ var qrcode = function() {
   (function arrival() {
     let ref = '', ch = '', from = '';
     try { const q = new URLSearchParams(location.search); ref = (q.get('r') || '').slice(0, 40); ch = (q.get('c') || '').slice(0, 20); } catch (e) { /* ignore */ }
-    try { if (document.referrer) from = new URL(document.referrer).hostname; } catch (e) { from = ''; }
+    let refUrl = document.referrer || '';
+    try { const kept = sessionStorage.getItem('akwaba-ref'); if (kept !== null) { refUrl = kept; sessionStorage.removeItem('akwaba-ref'); } } catch (e) { /* ignore */ }
+    try { if (refUrl) from = new URL(refUrl).hostname; if (from === location.hostname) from = ''; } catch (e) { from = ''; }
     if (!state.arrived) {
       state.arrived = true; save();
-      track('arrive', { ref: ref && ref !== state.uid ? ref : '', ch: ch || (from ? 'web' : 'direct'), from: from });
+      track('arrive', { ref: ref && ref !== state.uid ? ref : '', ch: ch || (from ? 'web' : 'direct'), from: from, lang: LANG });
     }
     if ((ref || ch) && HOSTED) { try { history.replaceState(null, '', location.pathname); } catch (e) { /* ignore */ } }
   })();
@@ -5978,8 +6057,10 @@ var qrcode = function() {
   if (window.THREE) { try { world = createWorld(stageEl, el.sheet, flightText, onPick, onMapLost); } catch (e) { world = null; } }
   if (!world) { const f = document.createElement('div'); f.className = 'fallback'; f.textContent = '3D 地圖沒有載入成功，仍然可以用下方的卡片遊玩。'; document.body.appendChild(f); }
   renderSheet();
+  let skipIntro = false;
+  try { skipIntro = sessionStorage.getItem('akwaba-switched') === '1' && !!state.pre; sessionStorage.removeItem('akwaba-switched'); } catch (e) { /* ignore */ }
   if (state.done.length === LEVELS.length && state.post) renderReport();
-  else renderIntro();
+  else if (!skipIntro) renderIntro();
   if (world) setTimeout(function () { world.flyTo(view, { quiet: true, dur: 3600 }); }, 400);
 })();
 </script>
