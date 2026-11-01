@@ -509,6 +509,8 @@ body:has(.overlay.playing:not([hidden])) .lang-btn, body:has(.modal-back:not([hi
 .collab { display: block; width: 100%; text-align: left; margin-top: 14px; padding: 14px 16px; border-radius: 16px; border: 2px dashed var(--lagoon); background: transparent; color: var(--ink); font: inherit; cursor: pointer; }
 .collab b { display: block; font-size: 15px; }
 .collab span { display: block; font-size: 13.5px; color: var(--lagoon); margin-top: 3px; font-weight: 700; }
+.collab.maison { text-decoration: none; border: 2px solid #141414; background: #F7F3EC; }
+.collab.maison span { color: #866631; }
 .result-btn { width: 100%; margin-top: 8px; padding: 11px; border-radius: 999px; border: 2px solid var(--terracotta); background: #F6E3CC; color: var(--terracotta); font: 700 15px/1 var(--sans, inherit); cursor: pointer; }
 .result-btn[hidden] { display: none !important; }
 .wp-hint { margin: 16px 0 0; font-size: 14px; color: var(--terracotta); font-weight: 700; }
@@ -5890,6 +5892,7 @@ var qrcode = function() {
       '<div class="row-btns">' + (state.contact ? '<button class="ghost" disabled>Journey saved. See you at the next stop</button>' : '<button class="ghost" id="enSave">Tell me about the next stop</button>') +
         (CONFIG.followUrl ? '<a class="ghost" href="' + esc(CONFIG.followUrl) + '" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;text-decoration:none;color:inherit">Follow us</a>' : '') + '</div>' +
       '<div class="fb-card" id="fbCard"></div>' +
+      '<a class="collab maison" id="enMaison" href="https://victortsengtw-sys.github.io/akwaba-maison/en/?utm_source=akwaba_game&amp;utm_medium=crosslink&amp;utm_campaign=evergreen&amp;utm_content=en_ending" target="_blank" rel="noopener"><b>Now read the taste behind the everyday</b><span>AKWABA · House of African Taste: the art, architecture and etiquette of Côte d’Ivoire →</span></a>' +
       '<button class="collab" type="button" id="enCollab"><b>Want to bring this game to a school, company or brand event?</b><span>Contact the author, Victor Tseng →</span></button>' +
       '<div id="wall"></div>' +
       '<div class="row-btns"><button class="ghost" id="enAlbum">See my album</button><button class="ghost" id="enAgain">Play again</button></div>' + creditHTML() + '</div>';
@@ -5902,6 +5905,7 @@ var qrcode = function() {
     renderFeedback();
     loadWall();
     $('enCollab').addEventListener('click', openAuthor);
+    $('enMaison').addEventListener('click', function () { track('maison_click', { from: 'ending' }); });
   }
 
   // ---------- 玩家回饋 ----------
