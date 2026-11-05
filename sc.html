@@ -6,7 +6,7 @@
 <!-- ================= 上线设置：只需要改下面这三行 ================= -->
 <meta name="akwaba-endpoint" content="https://script.google.com/macros/s/AKfycbwInIhzzGktCzpLak5uOhmewPhD0_XDLOuvtoV-V0Oa7DqL5TWK8GgHdYLGFVx_m7PxhQ/exec">
 <meta property="og:url" content="https://play.victseng.com/sc.html">
-<meta property="og:image" content="https://play.victseng.com/og-image.png">
+<meta property="og:image" content="https://play.victseng.com/og-image-sc.png">
 <!-- ================= 上线设置结束 ================= -->
 <!-- 语言版本：玩家选过就照他的选择；没选过时，从首页依浏览器语言和来源代码自动挑 -->
 <script>
@@ -73,7 +73,9 @@
 <style>html,body{margin:0;padding:0}</style>
 <title>Akwaba！非洲大冒险</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;900&family=Noto+Sans+SC:wght@400;500;700&family=Fraunces:opsz,wght@9..144,600&display=swap">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;900&family=Noto+Sans+SC:wght@400;500;700&family=Fraunces:opsz,wght@9..144,600&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;900&family=Noto+Sans+SC:wght@400;500;700&family=Fraunces:opsz,wght@9..144,600&display=swap"></noscript>
 <style>
 /* Layout: a full-screen miniature Côte d'Ivoire behind everything; a cream sheet docks at the bottom for the map,
    and levels open as full-screen poster-style overlays (silhouette art on top, story below). One deliberate world, single theme. */
@@ -567,7 +569,7 @@ body:has(.overlay.playing:not([hidden])) .lang-btn, body:has(.modal-back:not([hi
 <button class="close-btn" id="closeBtn" aria-label="关闭" hidden><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3 L13 13 M13 3 L3 13" stroke="#FAF1DF" stroke-width="2" stroke-linecap="round"></path></svg></button>
 <div class="modal-back" id="modal" hidden><div class="modal"><div class="inner" id="modalInner"></div></div></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script id="threeJs" async src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 /* qrcode-generator — MIT License, Copyright (c) 2009 Kazuhiko Arase */
 //---------------------------------------------------------------------
@@ -6073,14 +6075,34 @@ var qrcode = function() {
     d.querySelector('button').addEventListener('click', function () { location.reload(); });
     document.body.appendChild(d);
   }
-  if (window.THREE) { try { world = createWorld(stageEl, el.sheet, flightText, onPick, onMapLost); } catch (e) { world = null; } }
-  if (!world) { const f = document.createElement('div'); f.className = 'fallback'; f.textContent = '3D 地图没有加载成功，仍然可以用下方的卡片游玩。'; document.body.appendChild(f); }
+  // 3D 地圖的程式庫改成背景載入：畫面先出現，地圖載好再浮現
+  function startWorld() {
+    if (world || !window.THREE) return !!world;
+    try { world = createWorld(stageEl, el.sheet, flightText, onPick, onMapLost); } catch (e) { world = null; }
+    if (world) {
+      const f = document.querySelector('.fallback'); if (f) f.remove();
+      renderSheet();
+      setTimeout(function () { if (world) world.flyTo(view, { quiet: true, dur: 3600 }); }, 400);
+    }
+    return !!world;
+  }
+  function worldFallback() {
+    if (world || document.querySelector('.fallback')) return;
+    const f = document.createElement('div'); f.className = 'fallback'; f.textContent = '3D 地图没有加载成功，仍然可以用下方的卡片游玩。'; document.body.appendChild(f);
+  }
+  if (!startWorld()) {
+    const tj = document.getElementById('threeJs');
+    if (tj && !window.THREE) {
+      tj.addEventListener('load', function () { if (!startWorld()) worldFallback(); });
+      tj.addEventListener('error', worldFallback);
+      setTimeout(function () { if (!world) worldFallback(); }, 20000);
+    } else worldFallback();
+  }
   renderSheet();
   let skipIntro = false;
   try { skipIntro = sessionStorage.getItem('akwaba-switched') === '1' && !!state.pre; sessionStorage.removeItem('akwaba-switched'); } catch (e) { /* ignore */ }
   if (state.done.length === LEVELS.length && state.post) renderReport();
   else if (!skipIntro) renderIntro();
-  if (world) setTimeout(function () { world.flyTo(view, { quiet: true, dur: 3600 }); }, 400);
 })();
 </script>
 
