@@ -33,7 +33,7 @@
 <!-- Google Analytics 4：只在正式網站送資料；?c= 代碼在網址被清掉前先轉成 GA4 的來源 -->
 <script>
 (function () {
-  if (!/github\.io$/.test(location.hostname) || window.AKWABA_REDIRECT) return;
+  if (!/(^|\.)victseng\.com$|github\.io$/.test(location.hostname) || window.AKWABA_REDIRECT) return;
   window.dataLayer = window.dataLayer || [];
   window.gtag = function () { dataLayer.push(arguments); };
   var loc = location.href;
@@ -5791,7 +5791,7 @@ var qrcode = function() {
       '<p>Akwaba! An African Adventure is an original project by ' + esc(CONFIG.author) + ', drawn from his own life in Côte d\'Ivoire and made with the help of AI tools.</p>' +
       '<p>The story, stage design, characters, text, illustrations and interaction design of this game are copyright of ' + esc(CONFIG.authorFull) + '. You’re welcome to share the game link and share images; please do not reproduce, adapt, republish or use them commercially without written permission.</p>' +
       '<p>Facts in each stage are cited from the public sources listed in that stage, and the rights to that material belong to the original authors. The music in the game is synthesized by code as an approximation, not original recordings.</p>' +
-      '<p>Privacy: the game anonymously records your answers (such as the words you pick before and after the trip) to understand whether impressions of Africa change. We only know who you are if you choose to leave your contact details, and we use them only to send game updates, never sharing them with third parties. To delete your data, just reply to any email we send you.</p>' +
+      '<p>Privacy: data in this game is collected by Victor Tseng. While you play, I record a random player ID, the link you came from, your language, your progress, and the words you pick before and after the trip; if you leave feedback, also your rating, your sentence, age range, gender and whether you have been to Africa. Only if you choose to leave your contact details do I get your name, email or LINE ID and interests, and these are linked to the answers under the same player ID. I use this data to understand whether impressions of Africa change, to improve the game, and to tell you about new cities, teaching materials and related events; only statistics and approved, anonymous sentences are ever made public. The data is stored in a Google Sheet (a Google cloud service; servers may be outside Taiwan) that only I can see, and is never sold or shared. I also use Google Analytics for anonymous traffic statistics, without your name, comments or contact details. Data is kept until the game closes or until you ask me to delete it. You can ask to see, get a copy of, correct, stop the use of, or delete your data by writing to the address below. You can play the full game without leaving any data.</p>' +
       '<h3 class="about-h">Collaboration & contact</h3><p>For school programs, brand partnerships, licensing, talks or media interviews, feel free to contact me directly.</p>' + authorCard() + '</div>' +
       '<div class="next-row"><button class="primary" id="abClose"><i></i>Got it</button></div>');
     $('abClose').addEventListener('click', closeModal);
@@ -5826,8 +5826,8 @@ var qrcode = function() {
         '<label for="ctName">What should we call you? (optional)<input type="text" id="ctName" autocomplete="nickname"></label>' +
         '<label for="ctReach">Email (or WhatsApp / LINE ID)<input type="text" id="ctReach" autocomplete="email" inputmode="email"></label>' +
         '<div><div style="font-size:13.5px;color:#6B5A47;margin-bottom:6px">Which sides of Africa interest you? (pick any)</div><div class="chips checks">' + INTERESTS.map(function (t, k) { return '<button type="button" class="chip" aria-pressed="false" data-k="' + k + '">' + t + '</button>'; }).join('') + '</div></div>' +
-        '<label class="consent" for="ctOk"><input type="checkbox" id="ctOk"><span>I agree that Akwaba! An African Adventure may use these details to send me game updates. I can opt out anytime.</span></label>' +
-        '<p class="privacy-note">Privacy: your contact details are only used to tell you about game updates and are never shared with third parties. To delete your data, reply to any email we send you, or find our contact details on the “About & credits” page.</p>' +
+        '<label class="consent" for="ctOk"><input type="checkbox" id="ctOk"><span>I agree that Victor Tseng may use these details to tell me about new cities, teaching materials and related events. I can opt out anytime.</span></label>' +
+        '<p class="privacy-note">Privacy: these details are collected by Victor Tseng and used only to tell you about new cities, teaching materials and related events. I keep the name you give, your email or LINE ID, your interests and your answers in the game. They are stored in a Google Sheet that only I can see, and are never shared with anyone else. You can play the full game without leaving anything. To see, correct, stop the use of or delete your data, write to me at the address on the “About & credits” page. If you are under 18, please ask a teacher or parent to sign up instead.</p>' +
         '<div class="err" id="ctErr" role="alert"></div>' +
         '<div class="row-btns"><button class="primary" type="submit" id="ctSend"><i></i>Save my journey</button><button class="ghost" type="button" id="ctLater">Maybe later</button></div>' +
       '</form>');
@@ -5925,7 +5925,7 @@ var qrcode = function() {
       '<div class="stars" role="radiogroup" aria-label="How likely you are to recommend it">' + [1, 2, 3, 4, 5].map(function (n) { return '<button type="button" class="star" data-n="' + n + '" aria-label="' + n + ' stars">★</button>'; }).join('') + '</div>' +
       '<label class="fb-label" for="fbText">In one sentence, tell a friend what Africa is. (optional)</label>' +
       '<input id="fbText" type="text" maxlength="60" placeholder="e.g. Africa is far more interesting than I imagined">' +
-      '<p class="fb-note">Selected sentences may appear on the player wall, without your name.</p>' +
+      '<p class="fb-note">Selected sentences may appear on the player wall, without your name. See “About & credits” for how data is used.</p>' +
       '<details class="fb-about"><summary>About you (optional, helps us understand our players)</summary>' +
         ABOUT.map(function (g) { return '<div class="fb-group"><span>' + g[1] + '</span><div class="chips">' + g[2].map(function (o) { return '<button type="button" class="chip" aria-pressed="false" data-g="' + g[0] + '" data-v="' + esc(o) + '">' + esc(o) + '</button>'; }).join('') + '</div></div>'; }).join('') +
       '</details>' +

@@ -33,7 +33,7 @@
 <!-- Google Analytics 4：只在正式網站送資料；?c= 代碼在網址被清掉前先轉成 GA4 的來源 -->
 <script>
 (function () {
-  if (!/github\.io$/.test(location.hostname) || window.AKWABA_REDIRECT) return;
+  if (!/(^|\.)victseng\.com$|github\.io$/.test(location.hostname) || window.AKWABA_REDIRECT) return;
   window.dataLayer = window.dataLayer || [];
   window.gtag = function () { dataLayer.push(arguments); };
   var loc = location.href;
@@ -5791,7 +5791,7 @@ var qrcode = function() {
       '<p>Akwaba ! L’aventure africaine est un projet original de ' + esc(CONFIG.author) + ', inspiré de sa vie en Côte d’Ivoire et réalisé avec l’aide d’outils d’IA.</p>' +
       '<p>L’histoire, la conception des étapes, les personnages, les textes, les illustrations et le design interactif de ce jeu sont la propriété de ' + esc(CONFIG.authorFull) + '. Vous pouvez partager le lien du jeu et les images de partage ; toute reproduction, adaptation, republication ou utilisation commerciale sans accord écrit est interdite.</p>' +
       '<p>Les faits de chaque étape proviennent des sources publiques citées dans l’étape, et les droits de ces contenus appartiennent à leurs auteurs. La musique du jeu est synthétisée par programme à titre d’illustration, et non des enregistrements originaux.</p>' +
-      '<p>Confidentialité : le jeu enregistre vos réponses de façon anonyme (par exemple les mots choisis avant et après le voyage) pour savoir si l’image de l’Afrique évolue. Nous ne savons qui vous êtes que si vous laissez vos coordonnées, et nous les utilisons uniquement pour envoyer des nouvelles du jeu, sans jamais les transmettre à des tiers. Pour supprimer vos données, répondez simplement à l’un de nos e-mails.</p>' +
+      '<p>Confidentialité : les données de ce jeu sont collectées par Victor Tseng. Pendant la partie, j’enregistre un identifiant de joueur aléatoire, le lien par lequel vous êtes arrivé, la langue, votre progression et les mots choisis avant et après le voyage ; si vous laissez un avis, aussi la note, votre phrase, votre tranche d’âge, votre genre et si vous êtes déjà allé en Afrique. Je n’ai votre nom, votre e-mail ou identifiant LINE et vos centres d’intérêt que si vous choisissez de les laisser ; ils sont alors reliés aux réponses du même identifiant. Ces données servent à savoir si l’image de l’Afrique évolue, à améliorer le jeu et à vous prévenir des nouvelles villes, des supports pédagogiques et des événements liés ; seules des statistiques et des phrases validées et anonymes sont rendues publiques. Elles sont stockées dans un tableur Google (service cloud de Google, serveurs possiblement hors de Taïwan) que moi seul peux consulter, et ne sont jamais vendues ni transmises. J’utilise aussi Google Analytics pour des statistiques de trafic anonymes, sans votre nom, vos commentaires ni vos coordonnées. Les données sont conservées jusqu’à la fermeture du jeu ou jusqu’à votre demande de suppression. Vous pouvez demander à consulter, obtenir une copie, corriger, faire cesser l’utilisation ou supprimer vos données en m’écrivant à l’adresse ci-dessous. Vous pouvez jouer à tout le jeu sans laisser aucune donnée.</p>' +
       '<h3 class="about-h">Collaboration & contact</h3><p>Programmes scolaires, partenariats de marque, licences, conférences ou interviews : n’hésitez pas à me contacter directement.</p>' + authorCard() + '</div>' +
       '<div class="next-row"><button class="primary" id="abClose"><i></i>Compris</button></div>');
     $('abClose').addEventListener('click', closeModal);
@@ -5826,8 +5826,8 @@ var qrcode = function() {
         '<label for="ctName">Comment vous appeler ? (facultatif)<input type="text" id="ctName" autocomplete="nickname"></label>' +
         '<label for="ctReach">E-mail (ou WhatsApp / LINE)<input type="text" id="ctReach" autocomplete="email" inputmode="email"></label>' +
         '<div><div style="font-size:13.5px;color:#6B5A47;margin-bottom:6px">Quels aspects de l’Afrique vous intéressent ? (plusieurs choix possibles)</div><div class="chips checks">' + INTERESTS.map(function (t, k) { return '<button type="button" class="chip" aria-pressed="false" data-k="' + k + '">' + t + '</button>'; }).join('') + '</div></div>' +
-        '<label class="consent" for="ctOk"><input type="checkbox" id="ctOk"><span>J’accepte qu’Akwaba ! L’aventure africaine utilise ces informations pour m’envoyer des nouvelles du jeu. Je peux me désinscrire à tout moment.</span></label>' +
-        '<p class="privacy-note">Confidentialité : vos coordonnées servent uniquement à vous informer des nouveautés du jeu et ne sont jamais transmises à des tiers. Pour supprimer vos données, répondez à l’un de nos e-mails ou retrouvez nos coordonnées dans « À propos & droits ».</p>' +
+        '<label class="consent" for="ctOk"><input type="checkbox" id="ctOk"><span>J’accepte que Victor Tseng utilise ces informations pour me prévenir des nouvelles villes, des supports pédagogiques et des événements liés. Je peux me désinscrire à tout moment.</span></label>' +
+        '<p class="privacy-note">Confidentialité : ces informations sont collectées par Victor Tseng et servent uniquement à vous prévenir des nouvelles villes, des supports pédagogiques et des événements liés. Je conserve le nom indiqué, votre e-mail ou identifiant LINE, vos centres d’intérêt et vos réponses dans le jeu, dans un tableur Google que moi seul peux consulter, sans jamais les transmettre à personne. Vous pouvez jouer à tout le jeu sans rien laisser. Pour consulter, corriger, faire cesser l’utilisation ou supprimer vos données, écrivez-moi à l’adresse indiquée dans « À propos & droits ». Si vous avez moins de 18 ans, demandez à un enseignant ou à un parent de s’inscrire.</p>' +
         '<div class="err" id="ctErr" role="alert"></div>' +
         '<div class="row-btns"><button class="primary" type="submit" id="ctSend"><i></i>Sauvegarder mon voyage</button><button class="ghost" type="button" id="ctLater">Plus tard</button></div>' +
       '</form>');
@@ -5925,7 +5925,7 @@ var qrcode = function() {
       '<div class="stars" role="radiogroup" aria-label="Probabilité de recommandation">' + [1, 2, 3, 4, 5].map(function (n) { return '<button type="button" class="star" data-n="' + n + '" aria-label="' + n + ' étoiles">★</button>'; }).join('') + '</div>' +
       '<label class="fb-label" for="fbText">En une phrase, dites à un ami ce qu’est l’Afrique. (facultatif)</label>' +
       '<input id="fbText" type="text" maxlength="60" placeholder="ex. : L’Afrique est bien plus intéressante que je ne l’imaginais">' +
-      '<p class="fb-note">Les phrases sélectionnées peuvent apparaître sur le mur des joueurs, sans votre nom.</p>' +
+      '<p class="fb-note">Les phrases sélectionnées peuvent apparaître sur le mur des joueurs, sans votre nom. Voir « À propos & droits » pour l’usage des données.</p>' +
       '<details class="fb-about"><summary>À propos de vous (facultatif, pour mieux connaître nos joueurs)</summary>' +
         ABOUT.map(function (g) { return '<div class="fb-group"><span>' + g[1] + '</span><div class="chips">' + g[2].map(function (o) { return '<button type="button" class="chip" aria-pressed="false" data-g="' + g[0] + '" data-v="' + esc(o) + '">' + esc(o) + '</button>'; }).join('') + '</div></div>'; }).join('') +
       '</details>' +

@@ -33,7 +33,7 @@
 <!-- Google Analytics 4：只在正式網站送資料；?c= 代碼在網址被清掉前先轉成 GA4 的來源 -->
 <script>
 (function () {
-  if (!/github\.io$/.test(location.hostname) || window.AKWABA_REDIRECT) return;
+  if (!/(^|\.)victseng\.com$|github\.io$/.test(location.hostname) || window.AKWABA_REDIRECT) return;
   window.dataLayer = window.dataLayer || [];
   window.gtag = function () { dataLayer.push(arguments); };
   var loc = location.href;
@@ -5791,7 +5791,7 @@ var qrcode = function() {
       '<p>《Akwaba！非洲大冒險》由 ' + esc(CONFIG.author) + '（曾浩瑜）原創企劃，取材自他在象牙海岸生活的親身經歷，並使用 AI 工具協助製作。</p>' +
       '<p>本遊戲的故事、關卡設計、角色、文字、插圖與互動設計，著作權屬於 ' + esc(CONFIG.authorFull) + '。歡迎分享遊戲連結與分享圖卡；未經書面同意，請勿重製、改作、轉載或用於商業用途。</p>' +
       '<p>關卡中的事實資料，引用自各關所列的公開來源，該資料的權利屬於原作者。遊戲中的音樂是程式合成的示意音色，不是原曲錄音。</p>' +
-      '<p>隱私：遊戲會匿名記錄你的作答（例如出發前和結束後選的詞），用來了解大家對非洲的印象有沒有改變；只有你主動留下聯絡方式時，我們才會知道你是誰，而且只用來寄送遊戲更新，不會提供給第三方。想刪除資料，回覆我們寄給你的信即可。</p>' +
+      '<p>隱私：這個遊戲的資料由 Victor Tseng 曾浩瑜蒐集。你玩遊戲時，我會記錄一個隨機的玩家代號、你從哪個連結進來、選的語言、各關進度，以及出發前和結束後選的詞；填回饋時，還有星等、一句話、年齡層、性別和是否去過非洲。只有你主動留下聯絡方式時，我才會有你的稱呼、Email 或 LINE ID 和興趣，它會和同一個玩家代號的作答連在一起。這些資料用來了解大家對非洲的印象有沒有改變、改進遊戲，以及通知你新城市、教材與相關活動；對外只公布統計數字和審核過、不具名的句子。資料存在 Google 試算表（Google 的雲端服務，伺服器可能在台灣以外），只有我看得到，不會賣給或提供給其他人；另外用 Google Analytics 統計匿名流量，不含你的名字、留言或聯絡方式。資料保存到遊戲停止營運，或你要求刪除為止。你可以要求查看、取得副本、補充或更正、停止使用或刪除你的資料，用下面的信箱寫信給我即可。不留任何資料，也能完整玩遊戲。</p>' +
       '<h3 class="about-h">合作與聯絡</h3><p>學校課程、品牌合作、授權、演講或媒體採訪，歡迎直接聯絡我。</p>' + authorCard() + '</div>' +
       '<div class="next-row"><button class="primary" id="abClose"><i></i>知道了</button></div>');
     $('abClose').addEventListener('click', closeModal);
@@ -5826,8 +5826,8 @@ var qrcode = function() {
         '<label for="ctName">怎麼稱呼你（選填）<input type="text" id="ctName" autocomplete="nickname"></label>' +
         '<label for="ctReach">Email 或 LINE ID<input type="text" id="ctReach" autocomplete="email" inputmode="email"></label>' +
         '<div><div style="font-size:13.5px;color:#6B5A47;margin-bottom:6px">你對非洲的哪些面向有興趣？（可複選）</div><div class="chips checks">' + INTERESTS.map(function (t, k) { return '<button type="button" class="chip" aria-pressed="false" data-k="' + k + '">' + t + '</button>'; }).join('') + '</div></div>' +
-        '<label class="consent" for="ctOk"><input type="checkbox" id="ctOk"><span>我同意 Akwaba！非洲大冒險用這些資料寄送遊戲更新，可以隨時取消。</span></label>' +
-        '<p class="privacy-note">隱私說明：你的聯絡方式只用來通知遊戲更新，不會提供給任何第三方。想刪除資料，回覆我們寄給你的信，或在「關於與版權」頁找到聯絡方式告訴我們即可。</p>' +
+        '<label class="consent" for="ctOk"><input type="checkbox" id="ctOk"><span>我同意 Victor Tseng 曾浩瑜用這些資料通知我新城市、教材與相關活動，可以隨時取消。</span></label>' +
+        '<p class="privacy-note">隱私說明：這些資料由 Victor Tseng 曾浩瑜蒐集，只用來通知你新城市、教材與相關活動。我會保存你留下的稱呼、Email 或 LINE ID、興趣，以及你在遊戲裡的作答；資料存在 Google 試算表，只有我看得到，不會提供給其他人。不留也能完整玩遊戲。想查看、修改、停止使用或刪除資料，到「關於與版權」頁的信箱寫信告訴我。未滿 18 歲的同學，請讓老師或家長來留。</p>' +
         '<div class="err" id="ctErr" role="alert"></div>' +
         '<div class="row-btns"><button class="primary" type="submit" id="ctSend"><i></i>保存旅程</button><button class="ghost" type="button" id="ctLater">之後再說</button></div>' +
       '</form>');
@@ -5925,7 +5925,7 @@ var qrcode = function() {
       '<div class="stars" role="radiogroup" aria-label="推薦程度">' + [1, 2, 3, 4, 5].map(function (n) { return '<button type="button" class="star" data-n="' + n + '" aria-label="' + n + ' 顆星">★</button>'; }).join('') + '</div>' +
       '<label class="fb-label" for="fbText">用一句話告訴朋友，非洲是什麼？（選填）</label>' +
       '<input id="fbText" type="text" maxlength="40" placeholder="例如：非洲比我想像的有趣太多了">' +
-      '<p class="fb-note">被選上的句子會出現在玩家牆上，不會顯示你的名字。</p>' +
+      '<p class="fb-note">被選上的句子會出現在玩家牆上，不會顯示你的名字。資料怎麼使用，請看「關於與版權」。</p>' +
       '<details class="fb-about"><summary>關於你（選填，幫我們了解玩家）</summary>' +
         ABOUT.map(function (g) { return '<div class="fb-group"><span>' + g[1] + '</span><div class="chips">' + g[2].map(function (o) { return '<button type="button" class="chip" aria-pressed="false" data-g="' + g[0] + '" data-v="' + esc(o) + '">' + esc(o) + '</button>'; }).join('') + '</div></div>'; }).join('') +
       '</details>' +
