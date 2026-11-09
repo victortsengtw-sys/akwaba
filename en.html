@@ -38,12 +38,21 @@
   window.gtag = function () { dataLayer.push(arguments); };
   var loc = location.href;
   try {
-    var q = new URLSearchParams(location.search), c = (q.get('c') || '').slice(0, 20), r = q.get('r');
+    // ?c= 代碼轉成全系列共用的 UTM 規則：source＝平台、medium＝social/email/referral、campaign＝作品、content＝位置
+    var q = new URLSearchParams(location.search), c = (q.get('c') || '').toLowerCase().slice(0, 20), r = q.get('r');
     if (!q.get('utm_source') && (c || r)) {
+      var P = { ig: 'instagram', fb: 'facebook', yt: 'youtube', li: 'linkedin', line: 'line', threads: 'threads', tt: 'tiktok', tiktok: 'tiktok', xhs: 'xiaohongshu', wa: 'whatsapp' };
+      var head = c.split('_')[0], rest = c.slice(head.length + 1), src, med = 'social', ct = rest || 'link';
+      if (r) { src = 'player_share'; med = 'referral'; ct = c || 'share'; }
+      else if (P[head]) { src = P[head]; }
+      else if (c === 'site') { src = 'victseng'; med = 'referral'; ct = 'site'; }
+      else if (c === '404') { src = 'akwaba_game'; med = 'referral'; ct = '404'; }
+      else { src = c; med = 'referral'; ct = c; }
       var u = new URL(location.href);
-      u.searchParams.set('utm_source', c || 'player_share');
-      u.searchParams.set('utm_medium', r ? 'player_share' : 'akwaba_link');
-      u.searchParams.set('utm_campaign', 'akwaba_launch');
+      u.searchParams.set('utm_source', src);
+      u.searchParams.set('utm_medium', med);
+      u.searchParams.set('utm_campaign', 'akwaba');
+      u.searchParams.set('utm_content', ct);
       loc = u.toString();
     }
   } catch (e) { /* ignore */ }
@@ -5896,8 +5905,8 @@ var qrcode = function() {
       '<div class="row-btns">' + (state.contact ? '<button class="ghost" disabled>Journey saved. See you at the next stop</button>' : '<button class="ghost" id="enSave">Tell me about the next stop</button>') +
         (CONFIG.followUrl ? '<a class="ghost" href="' + esc(CONFIG.followUrl) + '" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;text-decoration:none;color:inherit">Follow us</a>' : '') + '</div>' +
       '<div class="fb-card" id="fbCard"></div>' +
-      '<a class="collab maison" id="enMaison" href="https://maison.victseng.com/en/?utm_source=akwaba_game&amp;utm_medium=crosslink&amp;utm_campaign=evergreen&amp;utm_content=en_ending" target="_blank" rel="noopener"><b>Now read the taste behind the everyday</b><span>AKWABA · House of African Taste: the art, architecture and etiquette of Côte d’Ivoire →</span></a>' +
-      '<a class="collab" id="enAuthor" href="https://victseng.com/en/?utm_source=akwaba_game&amp;utm_medium=crosslink&amp;utm_campaign=evergreen&amp;utm_content=en_ending" target="_blank" rel="author noopener"><b>Meet the author: Victor Tseng</b><span>100 articles on Africa, plus cross-cultural consulting: victseng.com →</span></a>' +
+      '<a class="collab maison" id="enMaison" href="https://maison.victseng.com/en/?utm_source=akwaba_game&amp;utm_medium=referral&amp;utm_campaign=maison&amp;utm_content=ending_en" target="_blank" rel="noopener"><b>Now read the taste behind the everyday</b><span>AKWABA · House of African Taste: the art, architecture and etiquette of Côte d’Ivoire →</span></a>' +
+      '<a class="collab" id="enAuthor" href="https://victseng.com/en/?utm_source=akwaba_game&amp;utm_medium=referral&amp;utm_campaign=site&amp;utm_content=ending_en" target="_blank" rel="author noopener"><b>Meet the author: Victor Tseng</b><span>100 articles on Africa, plus cross-cultural consulting: victseng.com →</span></a>' +
       '<button class="collab" type="button" id="enCollab"><b>Want to bring this game to a school, company or brand event?</b><span>Contact the author, Victor Tseng →</span></button>' +
       '<div id="wall"></div>' +
       '<div class="row-btns"><button class="ghost" id="enAlbum">See my album</button><button class="ghost" id="enAgain">Play again</button></div>' + creditHTML() + '</div>';
