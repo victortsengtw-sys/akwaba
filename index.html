@@ -38,12 +38,21 @@
   window.gtag = function () { dataLayer.push(arguments); };
   var loc = location.href;
   try {
-    var q = new URLSearchParams(location.search), c = (q.get('c') || '').slice(0, 20), r = q.get('r');
+    // ?c= 代碼轉成全系列共用的 UTM 規則：source＝平台、medium＝social/email/referral、campaign＝作品、content＝位置
+    var q = new URLSearchParams(location.search), c = (q.get('c') || '').toLowerCase().slice(0, 20), r = q.get('r');
     if (!q.get('utm_source') && (c || r)) {
+      var P = { ig: 'instagram', fb: 'facebook', yt: 'youtube', li: 'linkedin', line: 'line', threads: 'threads', tt: 'tiktok', tiktok: 'tiktok', xhs: 'xiaohongshu', wa: 'whatsapp' };
+      var head = c.split('_')[0], rest = c.slice(head.length + 1), src, med = 'social', ct = rest || 'link';
+      if (r) { src = 'player_share'; med = 'referral'; ct = c || 'share'; }
+      else if (P[head]) { src = P[head]; }
+      else if (c === 'site') { src = 'victseng'; med = 'referral'; ct = 'site'; }
+      else if (c === '404') { src = 'akwaba_game'; med = 'referral'; ct = '404'; }
+      else { src = c; med = 'referral'; ct = c; }
       var u = new URL(location.href);
-      u.searchParams.set('utm_source', c || 'player_share');
-      u.searchParams.set('utm_medium', r ? 'player_share' : 'akwaba_link');
-      u.searchParams.set('utm_campaign', 'akwaba_launch');
+      u.searchParams.set('utm_source', src);
+      u.searchParams.set('utm_medium', med);
+      u.searchParams.set('utm_campaign', 'akwaba');
+      u.searchParams.set('utm_content', ct);
       loc = u.toString();
     }
   } catch (e) { /* ignore */ }
@@ -5896,8 +5905,8 @@ var qrcode = function() {
       '<div class="row-btns">' + (state.contact ? '<button class="ghost" disabled>已保存旅程，下一站見</button>' : '<button class="ghost" id="enSave">想收到下一站的消息</button>') +
         (CONFIG.followUrl ? '<a class="ghost" href="' + esc(CONFIG.followUrl) + '" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;text-decoration:none;color:inherit">追蹤我們</a>' : '') + '</div>' +
       '<div class="fb-card" id="fbCard"></div>' +
-      '<a class="collab maison" id="enMaison" href="https://maison.victseng.com/?utm_source=akwaba_game&amp;utm_medium=crosslink&amp;utm_campaign=evergreen&amp;utm_content=zh-hant_ending" target="_blank" rel="noopener"><b>看懂了日常，接著讀懂品味</b><span>AKWABA 非洲品味之家：象牙海岸的藝術、建築與社交禮儀 →</span></a>' +
-      '<a class="collab" id="enAuthor" href="https://victseng.com/?utm_source=akwaba_game&amp;utm_medium=crosslink&amp;utm_campaign=evergreen&amp;utm_content=zh-hant_ending" target="_blank" rel="author noopener"><b>認識作者：Victor Tseng 曾浩瑜</b><span>100 篇非洲文章與跨文化顧問：victseng.com →</span></a>' +
+      '<a class="collab maison" id="enMaison" href="https://maison.victseng.com/?utm_source=akwaba_game&amp;utm_medium=referral&amp;utm_campaign=maison&amp;utm_content=ending_zh-hant" target="_blank" rel="noopener"><b>看懂了日常，接著讀懂品味</b><span>AKWABA 非洲品味之家：象牙海岸的藝術、建築與社交禮儀 →</span></a>' +
+      '<a class="collab" id="enAuthor" href="https://victseng.com/?utm_source=akwaba_game&amp;utm_medium=referral&amp;utm_campaign=site&amp;utm_content=ending_zh-hant" target="_blank" rel="author noopener"><b>認識作者：Victor Tseng 曾浩瑜</b><span>100 篇非洲文章與跨文化顧問：victseng.com →</span></a>' +
       '<button class="collab" type="button" id="enCollab"><b>想把這個遊戲帶進學校、公司或品牌活動？</b><span>聯絡作者 Victor Tseng →</span></button>' +
       '<div id="wall"></div>' +
       '<div class="row-btns"><button class="ghost" id="enAlbum">看我的圖鑑</button><button class="ghost" id="enAgain">再玩一次</button></div>' + creditHTML() + '</div>';
